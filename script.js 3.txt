@@ -1,0 +1,63 @@
+// script.js
+
+// Initial variables
+let currentPlayer = 'X';
+let gameBoard = ['', '', '', '', '', '', '', '', ''];
+let gameActive = true;
+
+// Winning combinations
+const winCombinations = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+    [0, 4, 8], [2, 4, 6] // diagonals
+];
+
+// Function to handle cell click
+function handleCellClick(index) {
+    if (gameActive && gameBoard[index] === '') {
+        gameBoard[index] = currentPlayer;
+        document.getElementById(`cell${index}`).innerText = currentPlayer;
+        checkGameStatus();
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+}
+
+// Function to check game status
+function checkGameStatus() {
+    for (let i = 0; i < winCombinations.length; i++) {
+        const [a, b, c] = winCombinations[i];
+        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+            gameActive = false;
+            document.getElementById('status').innerText = `${currentPlayer} wins!`;
+            break;
+        }
+    }
+    if (!gameBoard.includes('') && gameActive) {
+        gameActive = false;
+        document.getElementById('status').innerText = `It's a draw!`;
+    }
+}
+
+// Function to reset the game
+function resetGame() {
+    currentPlayer = 'X';
+    gameBoard = ['', '', '', '', '', '', '', '', ''];
+    gameActive = true;
+    document.getElementById('status').innerText = '';
+    Array.from(document.getElementsByClassName('cell')).forEach(cell => {
+        cell.innerText = '';
+    });
+}
+
+// Event listeners
+document.getElementById('reset-button').addEventListener('click', resetGame);
+
+// Generate the game board
+const board = document.getElementById('board');
+for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('div');
+    cell.classList.add('cell');
+    cell.setAttribute('id', `cell${i}`);
+    cell.addEventListener('click', () => handleCellClick(i));
+    board.appendChild(cell);
+}
